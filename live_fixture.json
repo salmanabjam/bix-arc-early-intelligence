@@ -1,0 +1,11 @@
+﻿{
+  "observed_at":"2026-09-22T05:53:32Z",
+  "block_number":22130925,
+  "tx_hash":"0xaf4431fe9e6019ff79aa9323dee6838005260deb91b496d9c1ba61626461ae5e",
+  "token":{"address":"0x8E98A62a995A50eca9979bfa016f91bf36A8F9D9","name":"UpSideDownCat","symbol":"USDC","holders_count":4249,"exchange_rate":"0.00207906","volume_24h":"716442.7918097046"},
+  "stablecoin":{"address":"0x3600000000000000000000000000000000000000","symbol":"USDC"},
+  "unique_wallets":["0x7d3C3FB43FC1c7B3e1ef083E4b2a58b88A2a7F46","0xb92fe925DC43a0ECdE6c8b1a2709c170Ec4fFf4f","0x7438d0AAB75551288C84CEb1b5DBa9F1A38c8436","0x8F10B468b06c6FD214B65F87778827F7D113f996","0x8366a39CC670B4001A1121B8F6A443A643e40951"],
+  "token_transfer_count":10,
+  "userop":true,
+  "source":"Blockscout live observation"
+}

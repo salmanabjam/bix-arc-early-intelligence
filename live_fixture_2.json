@@ -1,0 +1,11 @@
+﻿{
+  "observed_at":"2026-09-22T05:53:32Z",
+  "block_number":22130925,
+  "tx_hash":"0x7591c19292b2c1026f6931ec53b12b5e95b5ba16b3721d4ed7c494c402b53679",
+  "token":{"address":"0x731789f477Dc358916c976Eb87485fc57872865a","name":"SOLANA","symbol":"SOLANA","holders_count":123,"exchange_rate":null,"volume_24h":null},
+  "stablecoin":{"address":"0x3600000000000000000000000000000000000000","symbol":"USDC"},
+  "unique_wallets":["0x24dfd88a3225Ca5AA5034dC3bb3cccD71b2B3432","0x4fcA4a51Ab4F23A7447b3284fBd7D73289A89Fb1","0x8366a39CC670B4001A1121B8F6A443A643e40951","0xC867FbF9b4fe62aa00EBd2C4fc8C8A2F7025C1aC"],
+  "token_transfer_count":4,
+  "userop":false,
+  "source":"Blockscout live observation"
+}
