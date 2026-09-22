@@ -1,25 +1,28 @@
 ﻿# Arc Early Intelligence — Microgrant Prototype
 
-Status: READ_ONLY_PROTOTYPE_READY
+Status: MAINNET_PROOF_DEPLOYED
 
-What it does:
-- Reads Arc Mainnet activity.
-- Flags early abnormal token/wallet activity.
+BiX Arc Early Intelligence is a minimal read-only research prototype for early activity detection on Arc Mainnet.
+
+## What it does
+- Observes Arc Mainnet activity.
+- Scores unusual token and wallet patterns.
 - Stores timestamped evidence.
-- Never signs or sends transactions.
+- Anchors the evidence SHA-256 on Arc Mainnet.
+- Never signs trades or executes token purchases.
 
-Current evidence:
+## Live
+- Demo: https://salmanabjam.github.io/bix-arc-early-intelligence/
+- Contract: https://explorer.arc.io/address/0x489DBC6e44215f18bD07e633174AbA7D9aF18e3c
+- Deploy Tx: https://explorer.arc.io/tx/0xe618d187446ef6352fcc57ab18fbce0e7b1673fd5f74835e273e4daba4e6caca
+- Evidence SHA-256: ec7459c4cf592e1465f85fa5398a965cf80cb7b7b9764143ef9f0c1eae2ed550
+
+## Validation
 - 2 real Arc Mainnet observations tested.
 - 1 candidate signal.
-- 0 signals with proven lead-time over public tools.
-- Economic edge is NOT proven yet.
+- 0 signals with proven lead-time over public tools so far.
+- Trading edge is not claimed.
+- Mainnet proof is deployed and working.
 
-Grant fit:
-- Arc Microgrants fund small working prototypes on Arc Mainnet.
-- Submission requires a live deployment, public repo, short description, and public builder profile.
-- This project is not yet grant-eligible because no on-chain/mainnet deployment has been performed.
-
-Next minimal step:
-- Keep scanner read-only.
-- Add a tiny on-chain proof contract only after explicit approval for real USDC gas.
-- Publish repo + live demo.
+## Why Arc
+Arc makes the proof cheap and simple because transaction fees are paid in USDC. The project uses Arc Mainnet as the immutable anchor for timestamped signal evidence.
