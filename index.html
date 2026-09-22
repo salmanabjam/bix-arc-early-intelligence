@@ -4,7 +4,7 @@
 <body><h1>BiX Arc Early Intelligence</h1>
 <div class="card"><b>Purpose</b><p>Read-only early activity research for Arc Mainnet. Evidence is timestamped and one SHA-256 proof can be anchored on-chain.</p>
 <p>Evidence SHA-256:<br><code>ec7459c4cf592e1465f85fa5398a965cf80cb7b7b9764143ef9f0c1eae2ed550</code></p></div>
-<div class="card"><b>Wallet</b><p id="walletAddress">Not connected</p><button id="copyWallet">Copy wallet address</button></div><div class="card"><b>Fund Arc</b><p id="fundStatus">Need about 0.05 USDC on Arc for gas.</p><button id="fundArc">Bridge 0.05 USDC from BSC</button></div><div class="card"><b>Mainnet Proof</b><p id="status">Not deployed yet.</p><button id="deploy">Connect wallet & estimate deployment</button></div>
+<div class="card"><b>Wallet</b><p id="walletAddress">Not connected</p><button id="copyWallet">Copy wallet address</button></div><div class="card"><b>Fund Arc</b><p id="fundStatus">Need about 0.05 USDC on Arc for gas.</p><button id="fundArc">Bridge 0.05 USDC from BSC</button> <button id="continueBridge">Continue Bridge</button></div><div class="card"><b>Mainnet Proof</b><p id="status">Not deployed yet.</p><button id="deploy">Connect wallet & estimate deployment</button></div>
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
 <script>
 const BYTECODE="0x60c060405234801561000f575f80fd5b506040516103283803806103288339818101604052810190610031919061007e565b80608081815250504260a08181525050506100a9565b5f80fd5b5f819050919050565b61005d8161004b565b8114610067575f80fd5b50565b5f8151905061007881610054565b92915050565b5f6020828403121561009357610092610047565b5b5f6100a08482850161006a565b91505092915050565b60805160a0516102606100c85f395f60c301525f609f01526102605ff3fe608060405234801561000f575f80fd5b506004361061003f575f3560e01c80639f98ff0e14610043578063eae4c19f14610061578063f60ca60d1461007f575b5f80fd5b61004b61009d565b6040516100589190610136565b60405180910390f35b6100696100c1565b6040516100769190610167565b60405180910390f35b6100876100e5565b604051610094919061020a565b60405180910390f35b7f000000000000000000000000000000000000000000000000000000000000000081565b7f000000000000000000000000000000000000000000000000000000000000000081565b6040518060400160405280601a81526020017f42695820417263204561726c7920496e74656c6c6967656e636500000000000081525081565b5f819050919050565b6101308161011e565b82525050565b5f6020820190506101495f830184610127565b92915050565b5f819050919050565b6101618161014f565b82525050565b5f60208201905061017a5f830184610158565b92915050565b5f81519050919050565b5f82825260208201905092915050565b5f5b838110156101b757808201518184015260208101905061019c565b5f8484015250505050565b5f601f19601f8301169050919050565b5f6101dc82610180565b6101e6818561018a565b93506101f681856020860161019a565b6101ff816101c2565b840191505092915050565b5f6020820190508181035f83015261022281846101d2565b90509291505056fea2646970667358221220f956b8da7998af93afb099abe71ccd1ef08a9fc07dca7c2f2d39fc9e2259eb2a64736f6c63430008180033";
@@ -24,6 +24,25 @@ async function lifiQuote(addr){
  if(!r.ok) throw new Error("LI.FI quote failed: "+r.status);
  return await r.json();
 }
+async function continueBridgeOnly(){
+ if(!window.ethereum){alert("EVM wallet not found");return;}
+ await ensureBsc();
+ const provider=new ethers.BrowserProvider(window.ethereum);
+ const accounts=await provider.send("eth_requestAccounts",[]);
+ const addr=accounts[0]; CONNECTED=addr; document.getElementById("walletAddress").innerHTML="<code>"+addr+"</code>";
+ const q=await lifiQuote(addr);
+ const tr=q.transactionRequest;
+ const out=Number(q.estimate.toAmount)/1e6;
+ const gas=(q.estimate.gasCosts||[]).reduce((s,x)=>s+Number(x.amountUSD||0),0);
+ document.getElementById("fundStatus").innerText="Ready for bridge: 0.05 USDC → about "+out.toFixed(5)+" USDC on Arc. Estimated source gas $"+gas.toFixed(4)+".";
+ if(!confirm("Continue with the actual bridge now?")) return;
+ const signer=await provider.getSigner();
+ const sent=await signer.sendTransaction({to:tr.to,data:tr.data,value:BigInt(tr.value||"0x0"),gasLimit:tr.gasLimit?BigInt(tr.gasLimit):undefined});
+ document.getElementById("fundStatus").innerText="Bridge submitted: "+sent.hash+" — waiting for BSC confirmation...";
+ await sent.wait();
+ document.getElementById("fundStatus").innerText="BSC confirmed. USDC is moving to Arc. Wait a few seconds, then run Mainnet Proof.";
+}
+document.getElementById("continueBridge").onclick=continueBridgeOnly;
 document.getElementById("fundArc").onclick=async()=>{
  if(!window.ethereum){alert("EVM wallet not found");return;}
  await ensureBsc();
@@ -34,7 +53,7 @@ document.getElementById("fundArc").onclick=async()=>{
  const out=Number(q.estimate.toAmount)/1e6;
  const gas=(q.estimate.gasCosts||[]).reduce((s,x)=>s+Number(x.amountUSD||0),0);
  const fee=(q.estimate.feeCosts||[]).reduce((s,x)=>s+Number(x.amountUSD||0),0);
- document.getElementById("fundStatus").innerText="Quote: 0.05 USDC → about "+out.toFixed(5)+" USDC on Arc. Estimated source gas $"+gas.toFixed(4)+", bridge fee $"+fee.toFixed(4)+".";
+ document.getElementById("fundStatus").innerText="Quote: 0.05 USDC â†’ about "+out.toFixed(5)+" USDC on Arc. Estimated source gas $"+gas.toFixed(4)+", bridge fee $"+fee.toFixed(4)+".";
  if(!confirm("Bridge 0.05 USDC from BSC to Arc? Estimated source gas $"+gas.toFixed(4)+". Trust Wallet may ask for Approval first.")) return;
  const signer=await provider.getSigner();
  const erc20=new ethers.Contract(BSC_USDC,["function allowance(address,address) view returns(uint256)","function approve(address,uint256) returns(bool)"],signer);
@@ -49,7 +68,7 @@ document.getElementById("fundArc").onclick=async()=>{
  const tr=q.transactionRequest;
  document.getElementById("fundStatus").innerText="Step 2/2: confirm the bridge transaction in Trust Wallet.";
  const sent=await signer.sendTransaction({to:tr.to,data:tr.data,value:BigInt(tr.value||"0x0"),gasLimit:tr.gasLimit?BigInt(tr.gasLimit):undefined});
- document.getElementById("fundStatus").innerText="Bridge submitted: "+sent.hash+" — waiting for confirmation...";
+ document.getElementById("fundStatus").innerText="Bridge submitted: "+sent.hash+" â€” waiting for confirmation...";
  await sent.wait();
  document.getElementById("fundStatus").innerText="BSC transaction confirmed. USDC is moving to Arc. Wait a few seconds, then run Mainnet Proof.";
 };
